@@ -1,0 +1,15 @@
+# Build directories
+[Dd]ebug/
+[Rr]elease/
+
+# Build results
+*.o
+*.d
+*.eep
+*.elf
+*.hex
+*.map
+*.srec
+
+# User specific files
+*.atsuo
