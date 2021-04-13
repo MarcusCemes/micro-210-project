@@ -69,12 +69,18 @@
     <Compile Include="definitions.inc">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="drivers\lcd.asm">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="macros.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.asm">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="drivers" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Assembler.targets" />
 </Project>
