@@ -27,7 +27,7 @@
 ; Set bits in an I/O register
 ; @0: I/O register
 ; @1: Bit index
-.macro IOS
+.macro SMBI
     in      w, @0
     sbr     w, @1
     out     @0, w
@@ -36,10 +36,50 @@
 ; Clear bits in an I/O register
 ; @0: I/O register
 ; @1: Bit index
-.macro IOC
+.macro CMBI
     in      w, @0
-    sbc     w, @1
+    cbr     w, @1
     out     @0, w
+.endmacro
+
+
+; == Bit manipulation ==
+
+; Load an I/O bit to Register bit
+; @0: Register      @1: Bit
+; @2: I/O register  @2: I/O bit
+.macro  INB
+    cbr     @0, 1<<@1   ; Equivilent to andi ~(...), requires mask
+    sbic    @2, @3
+    sbr     @0, 1<<@1
+.endmacro
+
+; Store Register bit to I/O bit
+; @0: I/O register  @1: I/O bit
+; @2: Register      @3: Bit
+.macro  OUTB
+    cbi     @0, @1
+    sbrc    @2, @3
+    sbi     @0, @1
+.endmacro
+
+; Copy bit
+; @0: Destination register  @1: Desitnation bit
+; @2: Source register       @3: Source bit
+.macro  MOVB
+    bst     @2, @3
+    bld     @0, @1
+.endmacro
+
+; Compare two bits.
+; All conditional branches can be used after this instruction.
+; @0: Register 0    @1: Bit 0
+; @2: Register 1    @3: Bit 1
+.macro CPB
+    MOVB    _w, @1, @2, @3
+    eor     _w, @0
+    cbr     _w, ~(1<<@1)
+    tst     _w
 .endmacro
 
 

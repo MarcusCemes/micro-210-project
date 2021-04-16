@@ -77,7 +77,7 @@ lcd_2us:
 
 
 ; Sets the cursor position
-LCD_pos:
+LCD_change_pos:
     sbr     w, (1<<LCD_DA)
     rcall   LCD_ir_w
     ret
@@ -92,12 +92,29 @@ LCD_clear:
 
 ; === String utilities ===
 
-; Given a program memory address, correctly initialises
-; the Z register and calls LCD_print_z.
-.macro  LCD_PRINT
+; LCD Print
+; Given a program memory address, correctly initialises the Z register
+; and calls LCD_print_z.
+; Example:
+;   LCD_P       string_label
+;   string_label: .db "Hello world", 0
+.macro  LCD_P
     LDIZ    @0
     MUL2Z
     call    LCD_print_z
+.endmacro
+
+; LCD Print Lines
+; Prints two lines to the screen from the program memory.
+; @0: labe of line 1     :@2 label of line 2
+; Example:
+;   LCD_PL      string_1, string_2
+.macro  LCD_PL
+    rcall   LCD_clear
+    LCD_P       @0
+    ldi     w, LCD_POS_L2
+    rcall   LCD_change_pos
+    LCD_P       @1
 .endmacro
 
 
@@ -109,7 +126,10 @@ LCD_print_z:
     lpm     a0, Z+
 
     tst     a0
-    brbs    SREG_Z, return
+    breq    _LCD_print_z_ret
 
     rcall   LCD_dr_w
     rjmp    LCD_print_z
+
+    _LCD_print_z_ret:
+    ret
