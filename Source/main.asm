@@ -12,26 +12,22 @@ reset:
     OUTI    DDRB, 0xff                  ; LED Data Direction
     OUTI    LED, 0xff                   ; Reset LED state
     OUTI    DDRD, 0x00                  ; Button Data Direction
-    IOS     MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
+    SMBI    MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
     rcall   LCD_init                    ; initialise LCD
+    rcall   RE_init                     ; initialise Rotary Encoder
     jmp     main
 
 
 ; === Imports ===
 
 .include "drivers/lcd.asm"
-.include "utility.asm"
+.include "drivers/rotary_encoder.asm"
 
 
 ; === Entry point ===
 
 main:
-    LCD_PRINT str1
-
-    ldi     w, LCD_POS_L2   ; Change line
-    rcall   LCD_pos
-
-    LCD_PRINT str2
+    LCD_PL      greet_msg_0, greet_msg_1
 
 
 ; === Program termination ===
@@ -42,5 +38,5 @@ stop:
 
 ; === Binary payloads ===
 
-str1: .db "MICRO-210 proj.", 0
-str2: .db "EPFL MT-BA4 2021", 0, 0
+greet_msg_0: .db "MICRO-210 proj.", 0
+greet_msg_1: .db "EPFL MT-BA4 2021", 0, 0

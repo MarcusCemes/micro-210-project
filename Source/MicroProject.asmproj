@@ -72,6 +72,9 @@
     <Compile Include="drivers\lcd.asm">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="drivers\rotary_encoder.asm">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="macros.asm">
       <SubType>Code</SubType>
     </Compile>

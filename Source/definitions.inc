@@ -6,6 +6,7 @@
 
 
 ; === Definitions ===
+
 .set  clock = 4000000
 
 .def  char  = r0    ; character (ASCII)
@@ -49,6 +50,7 @@
 
 
 ; === ASCII codes ===
+
 .equ  BEL   = 0x07  ; bell
 .equ  HT    = 0x09  ; horizontal tab
 .equ  TAB   = 0x09  ; tab
@@ -62,11 +64,13 @@
 
 
 ; === STK-300 ===
+
 .equ  LED     = PORTB  ; LEDs on STK-300
 .equ  BUTTON  = PIND   ; buttons on the STK-300
 
 
 ; === Module M2 (encoder/speaker/IR remote) ===
+
 .equ  SPEAKER = 2   ; piezo speaker
 .equ  ENCOD_A = 4   ; angular encoder A
 .equ  ENCOD_B = 5   ; angular encoder B
@@ -75,6 +79,7 @@
 
 
 ; === Module M5 (I2C/1Wire) ===
+
 .equ  SCL     = 0   ; I2C serial clock
 .equ  SDA     = 1   ; I2C serial data
 .equ  DQ      = 5   ; Dallas 1Wire
@@ -95,6 +100,7 @@
 
 
 ; === Module M4 (Keyboard/Sharp/Servo) ===
+
 .equ  KB_CLK    = 0   ; PC-AT keyboard clock line
 .equ  KB_DAT    = 1   ; PC-AT keyboard data line
 .equ  GP2_CLK   = 2   ; Sharp GP2D02 distance measuring sensor
@@ -104,6 +110,7 @@
 
 
 ; === Module M3 (potentiometer/BNC) ===
+
 .equ  POT  = 0    ; potentiometer
 .equ  BNC1 = 2    ; BNC input
 .equ  BNC2 = 4    ; BNC input
