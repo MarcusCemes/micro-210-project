@@ -4,6 +4,11 @@
 .include "definitions.inc"
 .include "macros.asm"
 
+; === Interrupt vector table ===
+
+.org    0
+    jmp     reset
+
 
 ; === Device reset ===
 
@@ -15,6 +20,7 @@ reset:
     SMBI    MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
     rcall   LCD_init                    ; initialise LCD
     rcall   RE_init                     ; initialise Rotary Encoder
+    sei                                 ; Enable interrupts
     jmp     main
 
 
