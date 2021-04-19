@@ -1,0 +1,22 @@
+name: AVR Assembler
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install AVRA
+        run: sudo apt install avra
+
+      - name: Build
+        run: avra main.asm
+        working-directory: ./Source
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: micro-210-project
+          path: ./Source/main.asm
