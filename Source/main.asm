@@ -1,6 +1,7 @@
 ; === Top-level includes ===
 ; May only contain definitions and macros.
 
+.include "m128def.inc"
 .include "definitions.inc"
 .include "macros.asm"
 
