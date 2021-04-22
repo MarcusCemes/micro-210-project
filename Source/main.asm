@@ -1,3 +1,8 @@
+; file: main.asm        target: ATmega128L-4MHz-STK300
+; An EPFL MT-BA4 microcontroller project
+; Authors: Marcus Cemes, Julien Moreno, Charlotte Vadori
+
+
 ; === Top-level includes ===
 ; May only contain definitions and macros.
 
@@ -5,9 +10,10 @@
 .include "definitions.inc"
 .include "macros.asm"
 
+
 ; === Interrupt vector table ===
 
-.org    0
+.org    0x0000
     jmp     reset
 
 

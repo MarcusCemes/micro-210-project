@@ -75,6 +75,9 @@
     <Compile Include="drivers\rotary_encoder.asm">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="m128def.inc">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="macros.asm">
       <SubType>Code</SubType>
     </Compile>
