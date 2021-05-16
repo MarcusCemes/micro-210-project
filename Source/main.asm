@@ -33,6 +33,8 @@ reset:
 
 ; === Imports ===
 
+.include "lib/printf.asm"
+
 .include "drivers/lcd.asm"
 .include "drivers/rotary_encoder.asm"
 
