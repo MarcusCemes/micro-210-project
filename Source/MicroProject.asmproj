@@ -15,7 +15,7 @@
     <Name>MicroProject</Name>
     <RootNamespace>MicroProject</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
-    <EntryFile>$(MSBuildProjectDirectory)\main.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\global.asm</EntryFile>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -39,6 +39,18 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.32.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -66,13 +78,31 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AsmFile1.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="backupglobal.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="definitions.asm">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="definitions.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="drivers\lcd.asm">
+    <Compile Include="drivers\lcd2.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="drivers\rotary_encoder.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="drivers\wire1.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="global.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lcd.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="m128def.inc">
@@ -82,6 +112,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="printf.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servo1.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="servo36218.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wire1_temp2.asm">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

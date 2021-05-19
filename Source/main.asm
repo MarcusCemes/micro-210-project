@@ -7,7 +7,7 @@
 ; May only contain definitions and macros.
 
 .include "m128def.inc"
-.include "definitions.inc"
+.include "definitions.asm"
 .include "macros.asm"
 
 
@@ -27,13 +27,13 @@ reset:
     SMBI    MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
     rcall   LCD_init                    ; initialise LCD
     rcall   RE_init                     ; initialise Rotary Encoder
+	rcall	wire1_init					; initialize 1-wire(R) interface
+	rcall	lcd_init					; initialize LCD
     sei                                 ; Enable interrupts
     jmp     main
 
 
 ; === Imports ===
-
-.include "lib/printf.asm"
 
 .include "drivers/lcd.asm"
 .include "drivers/rotary_encoder.asm"
