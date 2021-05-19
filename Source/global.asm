@@ -125,4 +125,4 @@ lpssp01:	DEC2	b3,b2
 	P0	PORTB,SERVO1		; pin=0
 	ret
 
-	;clean les commentaires, vérifier les variables, avec les définitions, droits d'usage, les _ etc
+	;clean les commentaires, vï¿½rifier les variables, avec les dï¿½finitions, droits d'usage, les _ etc
