@@ -80,11 +80,18 @@
 ; All conditional branches can be used after this instruction.
 ; @0: Register 0    @1: Bit 0
 ; @2: Register 1    @3: Bit 1
-.macro CPB
+.macro  CPB
     MOVB    _w, @1, @2, @3
     eor     _w, @0
     cbr     _w, ~(1<<@1)
     tst     _w
+.endmacro
+
+; Invert a bit
+; @0: Register      @1: Bit
+.macro  INVB
+    ldi     _w, (1<<@1)
+    eor     @0, _w
 .endmacro
 
 

@@ -34,6 +34,7 @@ reset:
 ; === Imports ===
 
 .include "lib/printf.asm"
+.include "menu.asm"
 
 .include "drivers/lcd.asm"
 .include "drivers/rotary_encoder.asm"
@@ -42,7 +43,9 @@ reset:
 ; === Entry point ===
 
 main:
-    LCD_PL      greet_msg_0, greet_msg_1
+    LCD_PL  greet_msg_0, greet_msg_1
+    clr     c0
+    rcall   show_menu
 
 
 ; === Program termination ===
