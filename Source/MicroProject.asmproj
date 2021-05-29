@@ -15,7 +15,7 @@
     <Name>MicroProject</Name>
     <RootNamespace>MicroProject</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
-    <EntryFile>$(MSBuildProjectDirectory)\global.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\AsmFile1.asm</EntryFile>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -112,6 +112,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="math.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="printf.asm">

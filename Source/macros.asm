@@ -118,6 +118,14 @@
 ; 	miscellaneous
 ; ===================
 
+.macro SHIFT4 
+	lsr @0
+	lsr @0
+	lsr @0
+	lsr @0
+	.endmacro
+
+
 ; --- output/store (regular I/O space) immediate value ---
 .macro	OUTI	; port,k	output immediate value to port
 	ldi	w,@1
