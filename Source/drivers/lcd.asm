@@ -64,8 +64,8 @@ LCD_ir_w:
 ; Subroutine handle for the PRINTF macro, checks for CR and LF,
 ; before writing to the data register.
 LCD:
-    JK      a0, CR,LCD_cr   ; Jump if a0=CR
-    JK      a0, LF,LCD_lf   ; Jump if a0=LF
+    JK      a0, CR, LCD_cr   ; Jump if a0=CR
+    JK      a0, LF, LCD_lf   ; Jump if a0=LF
 
 ; Write a0 -> LCD Data Register
 LCD_dr_w:
@@ -90,7 +90,7 @@ LCD_change_pos:
 
 ; Simulate a line feed by changing cursor position
 LCD_lf:
-    CW      LCD_change_pos, (1<<LCD_POS_L2)
+    CW      LCD_change_pos, LCD_POS_L2
     ret
 
 
