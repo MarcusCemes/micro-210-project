@@ -1,6 +1,9 @@
 ; file: menu.asm        target: ATmega128L-4MHz-STK300
 ; Show a temperature selection menu
 
+
+; === Subroutines === ;
+
 ; Show a navigable menu, allowing to select temperature unit
 ; Stores the selection in bit 0 of ACR
 show_menu:
@@ -46,10 +49,10 @@ _menu_update_screen:
 
     _show_menu_print_c:
     PRINTF LCD
-    .db "> Celsius   ", 0, 0
+        .db "> Celsius   ", 0, 0
     ret
 
     _show_menu_print_f:
     PRINTF LCD
-    .db "> Fahrenheit", 0, 0
+        .db "> Fahrenheit", 0, 0
     ret

@@ -1,6 +1,7 @@
 ; file: macros.asm      target: ATmega128L-4MHz-STK300
 ; General use macros to avoid duplication.
 
+
 ; === Register manipulation === ;
 
 ; Load Stack Pointer

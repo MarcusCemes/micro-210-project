@@ -2,8 +2,8 @@
 ; purpose library, definition of addresses and constants
 ; Adapted from 20171114 A.S.
 
-.nolist             ; do not include in listing
 
+.nolist             ; do not include in listing
 
 ; === Definitions ===
 

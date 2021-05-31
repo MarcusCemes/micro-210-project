@@ -14,7 +14,9 @@ int6_handler:
     rcall   _int6_wait_on
     rcall   LCD_clear
 
-    ; Simulate reti but jump to specific point
+    ; Jump to servo recalibration routine
+    ; Remove the return address from the stack, restore
+    ; SREG and jump to the correct execution point.
     pop     _w
     pop     _w
     out     SREG, _sreg

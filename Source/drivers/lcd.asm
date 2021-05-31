@@ -3,6 +3,7 @@
 
 
 ; === Definitions ===
+
 .equ    LCD_IR      = 0x8000    ; address LCD instruction reg
 .equ    LCD_DR      = 0xc000    ; address LCD data register
 
