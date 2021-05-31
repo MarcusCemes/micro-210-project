@@ -61,6 +61,11 @@ LCD_ir_w:
     sts     LCD_IR, w
     ret
 
+; Subroutine handle for the PRINTF macro, checks for CR and LF,
+; before writing to the data register.
+LCD:
+    JK      a0, CR, LCD_cr   ; Jump if a0=CR
+    JK      a0, LF, LCD_lf   ; Jump if a0=LF
 
 ; Write a0 -> LCD Data Register
 LCD_dr_w:
@@ -76,10 +81,26 @@ lcd_2us:
     ret
 
 
-; Sets the cursor position
+; Sets the cursor position based on the w register
 LCD_change_pos:
     sbr     w, (1<<LCD_DA)
     rcall   LCD_ir_w
+    ret
+
+
+; Simulate a line feed by changing cursor position
+LCD_lf:
+    CW      LCD_change_pos, LCD_POS_L2
+    ret
+
+
+; Simulate a carriage return by changing cursor position
+LCD_cr:
+    lds     w, LCD_IR       ; Read IR for busy flag
+    JB1     w, 7, LCD_cr    ; Wait if busy
+    andi    w, (1<<6)       ; Keep line counter bit
+    ori     w, (1<<LCD_DA)  ; Create address command
+    rcall   LCD_ir_w        ; Write to IR
     ret
 
 
@@ -90,7 +111,7 @@ LCD_clear:
     ret
 
 
-; === String utilities ===
+; === String utilities === ;
 
 ; LCD Print
 ; Given a program memory address, correctly initialises the Z register
@@ -106,7 +127,7 @@ LCD_clear:
 
 ; LCD Print Lines
 ; Prints two lines to the screen from the program memory.
-; @0: labe of line 1     :@2 label of line 2
+; @0: label of line 1     :@2 label of line 2
 ; Example:
 ;   LCD_PL      string_1, string_2
 .macro  LCD_PL
