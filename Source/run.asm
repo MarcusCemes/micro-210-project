@@ -13,8 +13,8 @@ run:
     rcall   LCD_clear
     rcall   RE_init_nonblocking
 
-    P1      DDRC, SERVO1
-    P0      PORTC, SERVO1   ; pin=0
+    P1      DDRD, SERVO1
+    P0      PORTD, SERVO1   ; pin=0
     LDI2    b1, b0, npt     ; stock npt dans a0 et a1
 _set_unit:
     mov     w, d3
@@ -23,7 +23,7 @@ _set_unit:
 _initC:
     PRINTF  LCD
         .db "Set 20C", LF, 0, 0
-    ldi     r28, 0b10100
+    ldi     r28, 0b0010100
     rjmp    npset
 _initF:
     PRINTF  LCD
@@ -32,33 +32,29 @@ _initF:
 
 
 npset:                      ; neutral point setting
-    ldi     a3, 50
-    rcall	RE_nonblocking
+    ldi     a3, 20
+    rcall   RE_nonblocking
 
-    sbrc	a0, RE_BUTTON
-    rjmp	_npmem
+    sbrc    a0, RE_BUTTON
+    rjmp    _npmem
 
-    sbrs	a0, RE_TURN_RDY
-    rjmp	npset
-    rcall	RE_nonblocking_acknowledge
+    sbrs    a0, RE_TURN_RDY
+    rjmp    _exec
+    rcall   RE_nonblocking_acknowledge
 
-    sbrs	a0, RE_TURN_DIR
-    rjmp	_cw
-    rjmp	_ccw
+    sbrc    a0, RE_TURN_DIR
+    rjmp    _cw
+    rjmp    _ccw
 _exec:
     rcall   servoreg_pulse
     rjmp    npset
 _cw:
-    PRINTF LCD
-    .db CR, "_cw   ", 0
     ADDI2   b1, b0, 2       ; increase pulse timing
     rcall   servoreg_pulse
     dec     a3
     brne    _cw
     rjmp    npset
 _ccw:
-    PRINTF LCD
-    .db CR, "_ccw   ", 0
     SUBI2   b1, b0, 2       ; decrease pulse timing
     rcall   servoreg_pulse
     dec     a3
@@ -89,7 +85,7 @@ temp:
     mov     a0, c0
     push    a0
     push    a1
-    ldi     r30, 50
+    ldi     a3, 20
 
 
 _change_unit:
@@ -116,7 +112,7 @@ _test_temp:
     mov     w, d3
     cpi     w, 0b00000001
     brne    PC + 2
-    ldi     r30,25
+    ldi     a3, 20
 
 _temp_lower:
     cln
@@ -138,7 +134,7 @@ ccw2:
 _ccw2:
     ADDI2   b1, b0, 2
     rcall   servoreg_pulse
-    dec     r30
+    dec     a3
     brne    _ccw2
     pop     a0
     rjmp    temp
@@ -147,7 +143,7 @@ cw2:
 _cw2:
     SUBI2   b1, b0, 2
     rcall   servoreg_pulse
-    dec     r30
+    dec     a3
     brne    _cw2
     pop     a0
     rjmp    temp
@@ -157,11 +153,11 @@ _cw2:
 servoreg_pulse:
     WAIT_US 20000
     MOV2    b3, b2, b1, b0
-    P1      PORTC, SERVO1       ; pin=1
+    P1      PORTD, SERVO1       ; pin=1
 lpssp01:
     DEC2    b3, b2
     brne    lpssp01
-    P0      PORTC, SERVO1       ; pin=0
+    P0      PORTD, SERVO1       ; pin=0
     ret
 
 ; clean les commentaires, vérifier les variables, avec les définitions, droits d'usage, les _ etc

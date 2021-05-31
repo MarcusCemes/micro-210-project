@@ -14,9 +14,12 @@ int6_handler:
     rcall   _int6_wait_on
     rcall   LCD_clear
 
-    pop     b3
+    ; Simulate reti but jump to specific point
+    pop     _w
+    pop     _w
     out     SREG, _sreg
-    reti
+    jmp    _set_unit
+
 
 
 ; === Private subroutines === ;

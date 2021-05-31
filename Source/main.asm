@@ -51,9 +51,9 @@ reset:
 ; === Entry point === ;
 
 main:
-    ; LCD_PL  greet_msg_0, greet_msg_1
-    ; WAIT_MS 2000
-    ; rcall   show_menu
+    LCD_PL  greet_msg_0, greet_msg_1
+    WAIT_MS 2000
+    rcall   show_menu
 
     jmp     run
 
