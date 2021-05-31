@@ -53,37 +53,37 @@ RE_turn_block:
     ret
 
 
-; Initialises the b3 register for use with RE_nonblocking
+; Initialises the b0 register for use with RE_nonblocking
 ; Assumes that the rotary encoder is not mid-turn!
 ; Returns:
-;   b3: Initial state
+;   b0: Initial state
 RE_init_nonblocking:
-    clr     b3
-    INB     b3, RE_TURN_START, IOPIN, ENCOD_A
-    INB     b3, RE_BUTTON, IOPIN, ENCOD_I
-    INVB    b3, RE_BUTTON
+    clr     b0
+    INB     b0, RE_TURN_START, IOPIN, ENCOD_A
+    INB     b0, RE_BUTTON, IOPIN, ENCOD_I
+    INVB    b0, RE_BUTTON
     ret
 
 
 ; Use the rotary in non-blocking mode by polling for changes.
 ;
-; By passing in previous state stored in the b3 register,
+; By passing in previous state stored in the b0 register,
 ; this subroutine can check detect a turn, and update the
-; b3 register accordingly. When a turn is complete, the
+; b0 register accordingly. When a turn is complete, the
 ; RE_TURN_RDY bit is set. Also checks button status.
 ;
 ; Should be called as often as possible to be able to
 ; check for turn transition states.
 ;
-; Overwrites:
-;   w
+; Modifies:
+;   w, b0
 ; Params:
-;   b3: The previous state
+;   b0: The previous state
 ; Returns:
-;   b3: The current state
+;   b0: The current state
 RE_nonblocking:
-    INB     b3, RE_BUTTON, IOPIN, ENCOD_I
-    INVB    b3, RE_BUTTON
+    INB     b0, RE_BUTTON, IOPIN, ENCOD_I
+    INVB    b0, RE_BUTTON
 
     INB     w, 0, IOPIN, ENCOD_A
     INB     w, 1, IOPIN, ENCOD_B
@@ -91,32 +91,34 @@ RE_nonblocking:
     breq    _RE_nonblocking_same
 
     ; Update the turn direction
-    cbr     b3, (1<<RE_TURN_DIR)
+    cbr     b0, (1<<RE_TURN_DIR)
     sbrs    w, 0    ; Skip if anti-clockwise
-    sbr     b3, (1<<RE_TURN_DIR)
+    sbr     b0, (1<<RE_TURN_DIR)
 
     ; Compenstate for initial position
-    bst     b3, RE_TURN_START
+    bst     b0, RE_TURN_START
     brtc    _RE_nonblocking_early_return
-    INVB    b3, RE_TURN_DIR
+    INVB    b0, RE_TURN_DIR
     ret
 
     ; Check for completed turn
     _RE_nonblocking_same:
-    CPB     w, 0, b3, RE_TURN_START
+    CPB     w, 0, b0, RE_TURN_START
     breq    _RE_nonblocking_early_return
-    sbr     b3, (1<<RE_TURN_RDY)
+    sbr     b0, (1<<RE_TURN_RDY)
 
     ; Update the new start position
-    MOVB    b3, RE_TURN_START, w, 0
+    MOVB    b0, RE_TURN_START, w, 0
 
     _RE_nonblocking_early_return:
     ret
 
 
 ; Reset the RE_TURN_RDY bit to allow for subsequent turns
+; Modifies
+;   b0
 RE_nonblocking_acknowledge:
-    cbr     b3, (1<<RE_TURN_RDY)
+    cbr     b0, (1<<RE_TURN_RDY)
     ret
 
 

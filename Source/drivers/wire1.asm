@@ -4,7 +4,7 @@
 
 ; === Definitionms === ;
 
-.equ    DQ_port          = PORTE
+.equ    DQ_port          = PORTB
 .equ    DQ_pin           = DQ
 
 .equ    DS18B20          = 0x28

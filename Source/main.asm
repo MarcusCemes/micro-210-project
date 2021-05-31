@@ -32,7 +32,7 @@ reset:
     rcall   wire1_init                  ; initialize 1-wire(R) interface
     OUTI    EIMSK, (1<<6)               ; Configure interrupts
     OUTI    EICRB, 0x00                 ; Interrupt on low-level
-    clr     d1                          ; Reset Application Configuration Register
+    clr     d3                          ; Reset Application Configuration Register
     jmp     main
 
 
@@ -56,8 +56,8 @@ reset:
 main:
     LCD_PL  greet_msg_0, greet_msg_1
     sei
-loop:
-    rjmp    loop
+
+    ; jmp     run
 
 
 ; === Program termination === ;

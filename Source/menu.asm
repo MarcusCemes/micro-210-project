@@ -11,15 +11,15 @@ show_menu:
     _show_menu_interact:
     rcall   RE_nonblocking
 
-    sbrc    b3, RE_BUTTON
+    sbrc    b0, RE_BUTTON
     ret
 
-    sbrs    b3, RE_TURN_RDY
+    sbrs    b0, RE_TURN_RDY
     rjmp    _show_menu_interact
     rcall   RE_nonblocking_acknowledge
 
     ; Menu only has two options, no need to check turn direcion
-    INVB    d1, 0x00
+    INVB    d3, 0
     rcall   _menu_update_screen
     rjmp    _show_menu_interact
 
@@ -31,7 +31,7 @@ _menu_update_screen:
     PRINTF LCD
         .db "Display unit:", LF, 0, 0
 
-    tst     d1
+    tst     d3
     breq    _show_menu_print_c
     rjmp    _show_menu_print_f
 

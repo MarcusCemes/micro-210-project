@@ -10,7 +10,8 @@
 ; === Subroutines === ;
 
 run:
-    P0      PORTB, SERVO1   ; pin=0
+    P1      DDRC, SERVO1
+    P0      PORTC, SERVO1   ; pin=0
     LDI2    b1, b0, npt     ; stock npt dans a0 et a1
 _set_unit:
     mov     w, d1
@@ -133,11 +134,11 @@ _cw2:
 servoreg_pulse:
     WAIT_US 20000
     MOV2    b3, b2, b1, b0
-    P1      PORTB, SERVO1       ; pin=1
+    P1      PORTC, SERVO1       ; pin=1
 lpssp01:
     DEC2    b3, b2
     brne    lpssp01
-    P0      PORTB, SERVO1       ; pin=0
+    P0      PORTC, SERVO1       ; pin=0
     ret
 
 ; clean les commentaires, vérifier les variables, avec les définitions, droits d'usage, les _ etc
