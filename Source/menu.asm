@@ -11,10 +11,19 @@ show_menu:
     _show_menu_interact:
     rcall   RE_nonblocking
 
-    sbrc    b0, RE_BUTTON
+    ; Check if button is pressed
+    sbrs    a0, RE_BUTTON
+    rjmp    _show_menu_turns
+
+    ; Wait until button is depressed
+    _show_menu_depressed:
+    rcall   RE_nonblocking
+    sbrc    a0, RE_BUTTON
+    rjmp    _show_menu_depressed
     ret
 
-    sbrs    b0, RE_TURN_RDY
+    _show_menu_turns:
+    sbrs    a0, RE_TURN_RDY
     rjmp    _show_menu_interact
     rcall   RE_nonblocking_acknowledge
 

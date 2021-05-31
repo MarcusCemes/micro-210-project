@@ -23,9 +23,6 @@
 
 reset:
     LDSP    RAMEND                      ; initialise stack pointer
-    OUTI    DDRB, 0xff                  ; LED Data Direction
-    OUTI    LED, 0xff                   ; Reset LED state
-    OUTI    DDRD, 0x00                  ; Button Data Direction
     SMBI    MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
     rcall   LCD_init                    ; initialise LCD
     rcall   RE_init                     ; initialise Rotary Encoder
@@ -54,10 +51,11 @@ reset:
 ; === Entry point === ;
 
 main:
-    LCD_PL  greet_msg_0, greet_msg_1
-    sei
+    ; LCD_PL  greet_msg_0, greet_msg_1
+    ; WAIT_MS 2000
+    ; rcall   show_menu
 
-    ; jmp     run
+    jmp     run
 
 
 ; === Program termination === ;

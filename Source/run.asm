@@ -10,11 +10,14 @@
 ; === Subroutines === ;
 
 run:
+    rcall   LCD_clear
+    rcall   RE_init_nonblocking
+
     P1      DDRC, SERVO1
     P0      PORTC, SERVO1   ; pin=0
     LDI2    b1, b0, npt     ; stock npt dans a0 et a1
 _set_unit:
-    mov     w, d1
+    mov     w, d3
     cpi     w, 0b00000001
     breq    _initF
 _initC:
@@ -28,26 +31,46 @@ _initF:
     ldi     r28, 0b01000100
 
 
-npset:      ; neutral point setting
-    in      r21, PIND       ; changer pour utiliser le rotatory ancoder
-    cpi     r21, 0b11111110
-    breq    _cw
-    cpi     r21, 0b11111101
-    breq    _ccw
-    cpi     r21, 0b01111111
-    breq    _npmem
+npset:                      ; neutral point setting
+    ldi     a3, 50
+    rcall	RE_nonblocking
+
+    sbrc	a0, RE_BUTTON
+    rjmp	_npmem
+
+    sbrs	a0, RE_TURN_RDY
+    rjmp	npset
+    rcall	RE_nonblocking_acknowledge
+
+    sbrs	a0, RE_TURN_DIR
+    rjmp	_cw
+    rjmp	_ccw
 _exec:
     rcall   servoreg_pulse
     rjmp    npset
 _cw:
+    PRINTF LCD
+    .db CR, "_cw   ", 0
     ADDI2   b1, b0, 2       ; increase pulse timing
-    rjmp    _exec
-_ccw:
-    SUBI2   b1, b0, 2       ; decrease pulse timing
-    rjmp    _exec
-_npmem:
     rcall   servoreg_pulse
+    dec     a3
+    brne    _cw
+    rjmp    npset
+_ccw:
+    PRINTF LCD
+    .db CR, "_ccw   ", 0
+    SUBI2   b1, b0, 2       ; decrease pulse timing
+    rcall   servoreg_pulse
+    dec     a3
+    brne    _ccw
+    rjmp    npset
+_npmem:
+    rcall   RE_nonblocking
+    sbrc    a0, RE_BUTTON
+    rjmp    _npmem
 
+    rcall   servoreg_pulse
+    sei
 
 temp:
     rcall   wire1_reset             ; send a reset pulse
@@ -66,11 +89,11 @@ temp:
     mov     a0, c0
     push    a0
     push    a1
-
     ldi     r30, 50
 
+
 _change_unit:
-    mov     w, d1
+    mov     w, d3
     cpi     w, 0b00000001
     brne    _displayC
 
@@ -90,7 +113,7 @@ _displayC:
 
 _test_temp:
     ROR24   a0, a1
-    mov     w, d1
+    mov     w, d3
     cpi     w, 0b00000001
     brne    PC + 2
     ldi     r30,25
