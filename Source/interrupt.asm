@@ -6,6 +6,7 @@
 
 ; Enter a temperature selection menu
 int6_handler:
+    in      _sreg, SREG
     push    b3
 
     rcall   _int6_wait_on
@@ -14,6 +15,7 @@ int6_handler:
     rcall   LCD_clear
 
     pop     b3
+    out     SREG, _sreg
     reti
 
 
