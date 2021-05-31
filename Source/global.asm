@@ -6,6 +6,9 @@
 .include "definitions.asm"	; register/constant definitions
 
 .equ	npt = 1484			; effective/observed neutral point of individual servo		
+;.def cst = r29
+;.def thr = r28
+;.def loop = r30
 
 reset:
 	LDSP	RAMEND			; set up stack pointer (SP)
@@ -19,24 +22,28 @@ reset:
 .include "drivers/wire1.asm"		; include Dallas 1-wire(R) routines
 
 
-.macro CA3		;call a subroutine with three arguments in a1:a0 b0
-	ldi	b0, low(@1)		;speed and rotation direction
-	ldi b1, high(@1)	;speed and rotation direction
-	ldi r29, @2			;angle
-	rcall	@0
-.endmacro
-
 ; main -----------------
 main:	
 init:							; initializations
 	P0	PORTB,SERVO1			; pin=0
-	LDI2	b1,b0,npt			; stock np dans a0 et a1
-
+	LDI2	b1,b0,npt			; stock npt dans a0 et a1
+_set_unit:
+	mov w, d1
+	cpi w, 0b00000001
+	breq _initF
+_initC:
 	PRINTF	LCD					; print formatted
-.db	"Set 20C",LF,0, 0
+	.db	"Set 20C",LF,0, 0
+	ldi r28, 0b10100
+	rjmp npset
+_initF:
+	PRINTF	LCD					; print formatted
+	.db	"Set 68F",LF,0, 0
+	ldi r28, 0b01000100
+
 
 npset:							; neutral point setting
-	in	r21,PIND
+	in	r21,PIND				// changer pour utiliser le rotatory ancoder
 	cpi	r21, 0b11111110
 	breq _cw
 	cpi	r21, 0b11111101
@@ -53,10 +60,8 @@ _ccw:
 	SUBI2	b1,b0,2				; decrease pulse timing
 	rjmp	_exec
 _npmem:
-	LDI2	b1,b0,npt
 	rcall	servoreg_pulse
-	
-	ldi r28, 0b0100			; a modifier, défini 20 degrés
+
 
 temp:
 	rcall	wire1_reset			; send a reset pulse
@@ -73,48 +78,75 @@ temp:
 	rcall	wire1_read			; read temperature MSB
 	mov	a1,a0
 	mov	a0,c0
+	push a0
+	push a1
+	
+	ldi r30, 50
 
-_display:
+_change_unit:
+	mov w, d1
+	cpi w, 0b00000001
+	brne _displayC
+
+_displayF:
+	rcall mul21
+	MOV2 a1,a0, c1, c0
+	rcall div21
+	MOV2 a1,a0, c1, c0
+	ADDI a1, 0b0010
+	PRINTF	LCD
+	.db	"temp=",FFRAC2+FSIGN,a,4,$42,"F ",LF,0, 0
+	rjmp _test_temp
+_displayC:
 	PRINTF	LCD
 	.db	"temp=",FFRAC2+FSIGN,a,4,$42,"C ",LF,0, 0
-	PRINTF	LCD
-	.db	"a= ",FBIN, a,LF, 0,0  // trouver un moyen dafficher qu'un seul bit
-	// a enlever dans le truc final
 
-_test_temp:
-	mov r29, a0
-	SHIFT4 r29		//Nouvelle macro dans macros.asm Renommer ? SR4 ? (Shift right 4)
-	cp r29, r28
+_test_temp:		
+	ROR24 a0, a1
+	mov w, d1
+	cpi w, 0b00000001
 	brne PC+2
-	rjmp temp
-_temp_higher:
-	cp r29, r28
-	brlo PC+3
-	rcall _cw2
-	rjmp temp
+	ldi r30,25
+
 _temp_lower:
-	rcall _ccw2
+	cln
+	cp a0, r28
+	brlo ccw2
+_temp_higher:
+	cln
+	cp r28, a0
+	brlo cw2
+
+_exec2:	
+	clz
+	rcall	servoreg_pulse 
+	pop a1
+	pop a0
 	rjmp temp
-
-_jump: // au cas où on se trouve trop loins de temp pour utiliser un branch
-	jmp temp
-
+ccw2:
+	SUBI	r28, 1
 _ccw2:
-	ADDI2	b1,b0,50
-	SUBI	r28, 1		
-	rcall	servoreg_pulse
-	ret
+	ADDI2	b1,b0,2
+	rcall servoreg_pulse
+	DEC r30
+	brne _ccw2
+	pop a0
+	rjmp temp
+cw2:
+	ADDI	r28, 1	
 _cw2:
-	SUBI2	b1,b0,50	
-	ADDI	r28, 1		
-	rcall 	servoreg_pulse
-	ret
+	SUBI2	b1,b0,2
+	rcall servoreg_pulse
+	DEC r30
+	brne _cw2
+	pop a0
+	rjmp temp
 
 ; servoreg_pulse, in a1,a0, out servo port, mod a3,a2
 ; purpose generates pulse of length a1,a0
 servoreg_pulse:
 	WAIT_US	20000
-	MOV2	b3,b2, b1,b0	; fait des copies "locales"
+	MOV2	b3,b2, b1,b0	
 	P1	PORTB,SERVO1		; pin=1	
 lpssp01:	DEC2	b3,b2
 	brne	lpssp01
@@ -122,16 +154,16 @@ lpssp01:	DEC2	b3,b2
 	ret
 
 ;clean les commentaires, vérifier les variables, avec les définitions, droits d'usage, les _ etc
-div21:	 /* Fonctions reprises du fichier math.asm, mais modifié pour notre usage afin d'éviter
-			 tout conflit dans l'usage de registre*/
+div21:	 ; Fonctions reprises du fichier math.asm, mais modifié pour notre usage afin d'éviter tout conflit dans l'usage de registre
+	ldi r29,  0b01010000
 	MOV2	c1,c0, a1,a0		; c will contain the result
 	clr	d0			; d will contain the remainder
 	ldi	w,16			; load bit counter
 _d21:	
 	ROL3	d0,c1,c0		; shift carry into result c
-	sub	d0,5			; subtract b from remainder
+	sub	d0,r29			; subtract b from remainder
 	brcc	PC+2		
-	add	d0,5			; restore if remainder became negative
+	add	d0,r29			; restore if remainder became negative
 	DJNZ	w,_d21			; Decrement and Jump if bit-count Not Zero
 	ROL2	c1,c0			; last shift (carry into result c)
 	COM2	c1,c0			; complement result
@@ -139,8 +171,9 @@ _d21:
 
 
 mul21:	
+	ldi r29, 0b10010000
 	CLR2	c2,c1			; clear upper half of result c
-	mov	c0,9			; place b in lower half of c
+	mov	c0,r29			; place b in lower half of c
 	lsr	c0			; shift LSB (of b) into carry
 	ldi	w,8			; load bit counter
 _m21:	
@@ -149,3 +182,5 @@ _m21:
 	ROR3	c2,c1,c0		; shift-right c, LSB (of b) into carry
 	DJNZ	w,_m21			; Decrement and Jump if bit-count Not Zero
 	ret
+
+	/* utiliser  des push et pop pour utiliser moins de registres ? */

@@ -114,16 +114,33 @@
 	subi	zh,-1		; add carry
 	.endmacro
 
+	
 ; ===================
-; 	miscellaneous
+; 	CUSTOM
 ; ===================
-
 .macro SHIFT4 
 	lsr @0
 	lsr @0
 	lsr @0
 	lsr @0
 	.endmacro
+
+.macro ROR24
+	ldi _w, 4
+_ror24:
+	lsr @0
+	lsr @1
+	brcc PC+2
+	ADDI @0, 0b10000000
+	dec _w
+	brne _ror24
+	.endmacro
+
+
+
+; ===================
+; 	miscellaneous
+; ===================
 
 
 ; --- output/store (regular I/O space) immediate value ---
