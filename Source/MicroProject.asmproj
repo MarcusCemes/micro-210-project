@@ -15,7 +15,7 @@
     <Name>MicroProject</Name>
     <RootNamespace>MicroProject</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
-    <EntryFile>$(MSBuildProjectDirectory)\AsmFile1.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\main.asm</EntryFile>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -78,19 +78,10 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsmFile1.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="backupglobal.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="definitions.asm">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="definitions.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="drivers\lcd2.asm">
+    <Compile Include="drivers/lcd.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="drivers\rotary_encoder.asm">
@@ -99,10 +90,7 @@
     <Compile Include="drivers\wire1.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="global.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="lcd.asm">
+    <Compile Include="lib/printf.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="m128def.inc">
@@ -114,24 +102,13 @@
     <Compile Include="main.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="math.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="printf.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="servo1.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="servo36218.asm">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="wire1_temp2.asm">
+    <Compile Include="run.asm">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="drivers" />
+    <Folder Include="lib" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Assembler.targets" />
 </Project>

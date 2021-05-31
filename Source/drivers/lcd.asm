@@ -6,7 +6,9 @@
 .equ    LCD_IR      = 0x8000    ; address LCD instruction reg
 .equ    LCD_DR      = 0xc000    ; address LCD data register
 
-.equ    LCD_CLR_CLR = 0   ; clear instruction
+.equ    LCD_CLR_CLR  = 0   ; clear instruction
+
+.equ    LCD_HOME_I  = 1   ; return home
 
 .equ    LCD_IR_BUSY = 7   ; Bit indicating that LCD is busy
 
@@ -61,6 +63,7 @@ LCD_ir_w:
     sts     LCD_IR, w
     ret
 
+LCD:
 
 ; Write a0 -> LCD Data Register
 LCD_dr_w:
@@ -76,6 +79,10 @@ lcd_2us:
     ret
 
 
+LCD_home:
+    CW      LCD_ir_w, (1<<LCD_HOME)
+    ret
+
 ; Sets the cursor position
 LCD_change_pos:
     sbr     w, (1<<LCD_DA)
@@ -85,7 +92,6 @@ LCD_change_pos:
 
 ; Clears the LCD screen
 LCD_clear:
-    LCD_RDY
     CW      LCD_ir_w, (1<<LCD_CLR_CLR)
     ret
 
