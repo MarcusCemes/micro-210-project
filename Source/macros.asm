@@ -95,6 +95,17 @@
 .endmacro
 
 
+; Clear port bit
+.macro  P0
+    cbi     @0, @1
+.endmacro
+
+; Set port bit
+.macro  P1
+    sbi     @0, @1
+.endmacro
+
+
 ; === Pointers === ;
 
 ; Load an immediate value into the Z register
@@ -180,6 +191,61 @@
 
 ; === Multi-register manipulation === ;
 
+; Load three registers immediate
+.macro  LDI2
+    ldi     @1, low(@2)
+    ldi     @0, high(@2)
+.endmacro
+
+; Add two registers
+.macro  ADD2
+    add     @1, @3
+    adc     @0, @2
+.endmacro
+
+; Add immediate two registers
+.macro  ADDI2
+    subi    @1, low(-@2)
+    sbci    @0, high(-@2)
+.endmacro
+
+; Subtract immediate two registers
+.macro  SUBI2
+    subi    @1, low(@2)
+    sbci    @0, high(@2)
+.endmacro
+
+; Decrement two registers
+.macro  DEC2
+    ldi     w, 0xff
+    add     @1, w
+    adc     @0, w
+.endmacro
+
+; Copy two registers
+.macro  MOV2
+    mov     @1, @3
+    mov     @0, @2
+.endmacro
+
+; Rotate left through carry two registers
+.macro  ROL2
+    rol     @1
+    rol     @0
+.endmacro
+
+; One's complement two registers
+.macro  COM2
+    com     @0
+    com     @1
+.endmacro
+
+; Clear two registers
+.macro  CLR2
+    sub     @0,@0
+    clr     @1
+.endmacro
+
 ; Push three registers to the stack
 .macro  PUSH3
     push    @0
@@ -199,6 +265,20 @@
     mov     @2, @5
     mov     @1, @4
     mov     @0, @3
+.endmacro
+
+; Rotate left through carry three registers
+.macro  ROL3
+    rol     @2
+    rol     @1
+    rol     @0
+.endmacro
+
+; ortate right through carry
+.macro  ROR3
+    ror     @0
+    ror     @1
+    ror     @2
 .endmacro
 
 ; Push four registers to the stack
@@ -314,10 +394,25 @@
 .endmacro
 
 
+; == Custom implementations == ;
+
+; Rotate two registers
+.macro ROR24
+    ldi     _w, 4
+_ror24:
+    lsr     @0
+    lsr     @1
+    brcc    PC+2
+    ADDI    @0, 0b10000000
+    dec     _w
+    brne    _ror24
+.endmacro
+
+
 ; === Utility === ;
 
-; Call With
-; Load an immediate value into the w register and rcall a function.
+; Call Working
+; Load an immediate value into the w register and rcall a subroutine
 ; @0: Function (r-called)
 ; @1: Constant
 .macro CW
@@ -325,11 +420,59 @@
     rcall   @0
 .endmacro
 
-; Call With Extended
-; Load an immediate value into the w register and call a function.
+; Call Working Extended
+; Load an immediate value into the w register and call a subroutine
 ; @0: Function (called)
 ; @1: Constant
 .macro CWE
     ldi     w, @1
     call    @0
+.endmacro
+
+; Call a0
+; Load an immediate value into a0 and call a subroutine
+.macro  CA
+    ldi     a0, @1
+    rcall   @0
+.endmacro
+
+
+; === Time === ;
+
+; Wait micro-seconds (us)
+; us = x*3*1000'000/clock)  ==> x=us*clock/3000'000
+.macro  WAIT_US
+    ldi     w, low((clock/1000*@0/3000)-1)
+    mov     u, w
+    ldi     w, high((clock/1000*@0/3000)-1)+1 ; set up: 3 cyles
+    dec     u
+    brne    PC - 1      ; inner loop: 3 cycles
+    dec     u           ; adjustment for outer loop
+    dec     w
+    brne    PC - 4
+.endmacro
+
+; Wait milli-seconds (ms)
+.macro  WAIT_MS
+    ldi     w, low(@0)
+    mov     u, w            ; u = LSB
+    ldi     w, high(@0)+1   ; w = MSB
+wait_ms:
+    push    w               ; wait 1000 usec
+    push    u
+    ldi     w, low((clock/3000)-5)
+    mov     u, w
+    ldi     w, high((clock/3000)-5)+1
+    dec     u
+    brne    PC-1        ; inner loop: 3 cycles
+    dec     u           ; adjustment for outer loop
+    dec     w
+    brne    PC-4
+    pop     u
+    pop     w
+
+    dec     u
+    brne    wait_ms
+    dec     w
+    brne    wait_ms
 .endmacro

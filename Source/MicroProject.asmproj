@@ -39,6 +39,18 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.32.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -69,10 +81,16 @@
     <Compile Include="definitions.inc">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="drivers\lcd.asm">
+    <Compile Include="drivers/lcd.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="drivers\rotary_encoder.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="drivers\wire1.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lib/printf.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="m128def.inc">
@@ -87,9 +105,13 @@
     <Compile Include="menu.asm">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="run.asm">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="drivers" />
+    <Folder Include="lib" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Assembler.targets" />
 </Project>

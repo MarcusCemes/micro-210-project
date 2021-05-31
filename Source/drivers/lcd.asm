@@ -8,6 +8,8 @@
 
 .equ    LCD_CLR_CLR = 0   ; clear instruction
 
+.equ    LCD_HOME_I  = 1   ; return home
+
 .equ    LCD_IR_BUSY = 7   ; Bit indicating that LCD is busy
 
 .equ    LCD_EM_SHFT = 0   ; Enable cursor shift
@@ -81,7 +83,16 @@ lcd_2us:
     ret
 
 
-; Sets the cursor position based on the w register
+; Reset the cursor position
+; ModifieS:
+;   w
+LCD_home:
+    CW      LCD_ir_w, (1<<LCD_HOME_I)
+    ret
+
+; Sets the cursor position based on w register
+; Modifies:
+;   w
 LCD_change_pos:
     sbr     w, (1<<LCD_DA)
     rcall   LCD_ir_w
@@ -106,7 +117,6 @@ LCD_cr:
 
 ; Clears the LCD screen
 LCD_clear:
-    LCD_RDY
     CW      LCD_ir_w, (1<<LCD_CLR_CLR)
     ret
 

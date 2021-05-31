@@ -23,15 +23,13 @@
 
 reset:
     LDSP    RAMEND                      ; initialise stack pointer
-    OUTI    DDRB, 0xff                  ; LED Data Direction
-    OUTI    LED, 0xff                   ; Reset LED state
-    OUTI    DDRD, 0x00                  ; Button Data Direction
     SMBI    MCUCR, (1<<SRE)+(1<<SRW10)  ; enable external SRAM
     rcall   LCD_init                    ; initialise LCD
     rcall   RE_init                     ; initialise Rotary Encoder
+    rcall   wire1_init                  ; initialize 1-wire(R) interface
     OUTI    EIMSK, (1<<6)               ; Configure interrupts
     OUTI    EICRB, 0x00                 ; Interrupt on low-level
-    clr     c0                          ; Reset temperature unit
+    clr     d3                          ; Reset Application Configuration Register
     jmp     main
 
 
@@ -41,6 +39,9 @@ reset:
 
 .include "drivers/lcd.asm"
 .include "drivers/rotary_encoder.asm"
+.include "drivers/wire1.asm"
+
+.include "run.asm"
 
 .include "interrupt.asm"
 .include "menu.asm"
@@ -51,9 +52,10 @@ reset:
 
 main:
     LCD_PL  greet_msg_0, greet_msg_1
-    sei
-loop:
-    rjmp    loop
+    WAIT_MS 2000
+    rcall   show_menu
+
+    jmp     run
 
 
 ; === Program termination === ;

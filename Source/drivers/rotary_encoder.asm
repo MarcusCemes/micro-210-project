@@ -1,5 +1,5 @@
 ; file: drivers/rotary_encoder.asm     target: ATmega128L-4MHz-STK300
-; Interfaces with the STEC11B03 Rotary Encoder peripheral
+; Interfaces with the STEC11a03 Rotary Encoder peripheral
 
 
 ; === Definitions === ;
@@ -53,37 +53,37 @@ RE_turn_block:
     ret
 
 
-; Initialises the b3 register for use with RE_nonblocking
+; Initialises the a0 register for use with RE_nonblocking
 ; Assumes that the rotary encoder is not mid-turn!
 ; Returns:
-;   b3: Initial state
+;   a0: Initial state
 RE_init_nonblocking:
-    clr     b3
-    INB     b3, RE_TURN_START, IOPIN, ENCOD_A
-    INB     b3, RE_BUTTON, IOPIN, ENCOD_I
-    INVB    b3, RE_BUTTON
+    clr     a0
+    INB     a0, RE_TURN_START, IOPIN, ENCOD_A
+    INB     a0, RE_BUTTON, IOPIN, ENCOD_I
+    INVB    a0, RE_BUTTON
     ret
 
 
 ; Use the rotary in non-blocking mode by polling for changes.
 ;
-; By passing in previous state stored in the b3 register,
+; By passing in previous state stored in the a0 register,
 ; this subroutine can check detect a turn, and update the
-; b3 register accordingly. When a turn is complete, the
+; a0 register accordingly. When a turn is complete, the
 ; RE_TURN_RDY bit is set. Also checks button status.
 ;
 ; Should be called as often as possible to be able to
 ; check for turn transition states.
 ;
-; Overwrites:
-;   w
+; Modifies:
+;   w, a0
 ; Params:
-;   b3: The previous state
+;   a0: The previous state
 ; Returns:
-;   b3: The current state
+;   a0: The current state
 RE_nonblocking:
-    INB     b3, RE_BUTTON, IOPIN, ENCOD_I
-    INVB    b3, RE_BUTTON
+    INB     a0, RE_BUTTON, IOPIN, ENCOD_I
+    INVB    a0, RE_BUTTON
 
     INB     w, 0, IOPIN, ENCOD_A
     INB     w, 1, IOPIN, ENCOD_B
@@ -91,32 +91,34 @@ RE_nonblocking:
     breq    _RE_nonblocking_same
 
     ; Update the turn direction
-    cbr     b3, (1<<RE_TURN_DIR)
+    cbr     a0, (1<<RE_TURN_DIR)
     sbrs    w, 0    ; Skip if anti-clockwise
-    sbr     b3, (1<<RE_TURN_DIR)
+    sbr     a0, (1<<RE_TURN_DIR)
 
     ; Compenstate for initial position
-    bst     b3, RE_TURN_START
+    bst     a0, RE_TURN_START
     brtc    _RE_nonblocking_early_return
-    INVB    b3, RE_TURN_DIR
+    INVB    a0, RE_TURN_DIR
     ret
 
     ; Check for completed turn
     _RE_nonblocking_same:
-    CPB     w, 0, b3, RE_TURN_START
+    CPB     w, 0, a0, RE_TURN_START
     breq    _RE_nonblocking_early_return
-    sbr     b3, (1<<RE_TURN_RDY)
+    sbr     a0, (1<<RE_TURN_RDY)
 
     ; Update the new start position
-    MOVB    b3, RE_TURN_START, w, 0
+    MOVB    a0, RE_TURN_START, w, 0
 
     _RE_nonblocking_early_return:
     ret
 
 
 ; Reset the RE_TURN_RDY bit to allow for subsequent turns
+; Modifies
+;   a0
 RE_nonblocking_acknowledge:
-    cbr     b3, (1<<RE_TURN_RDY)
+    cbr     a0, (1<<RE_TURN_RDY)
     ret
 
 
@@ -124,7 +126,7 @@ RE_nonblocking_acknowledge:
 
 ; Loop until the rotary encoder has completed a half turn.
 ; The value of ENCOD_A and ENCOD_B are stored in bit 0 of
-; a0 and b0 respectivly.
+; a0 and a0 respectivly.
 _RE_wait_half:
     clr     w
     INB     w, 0, IOPIN, ENCOD_A
@@ -136,7 +138,7 @@ _RE_wait_half:
 
 ; Loop until the rotary encoder has completed a half turn.
 ; The value of ENCOD_A and ENCOD_B are stored in bit 1 of
-; a0 and b0 respectivly.
+; a0 and a0 respectivly.
 _RE_wait_full:
     clr     w
     INB     w, 0, IOPIN, ENCOD_A
