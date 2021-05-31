@@ -1,4 +1,4 @@
-; file: temperature     target: ATmega128L-4MHz-STK300
+; file: run.asm     target: ATmega128L-4MHz-STK300
 ; Reads the temperature and displays on LCD and servo.
 
 
