@@ -3,7 +3,7 @@
 ; Authors: Marcus Cemes, Julien Moreno, Charlotte Vadori
 
 
-; === Top-level includes ===
+; === Top-level includes === ;
 ; May only contain definitions and macros.
 
 .include "m128def.inc"
@@ -11,13 +11,15 @@
 .include "macros.asm"
 
 
-; === Interrupt vector table ===
+; === Interrupt vector table === ;
 
 .org    0x0000
     jmp     reset
+.org    INT6addr
+    jmp     int6_handler
 
 
-; === Device reset ===
+; === Device reset === ;
 
 reset:
     LDSP    RAMEND                      ; initialise stack pointer
@@ -28,12 +30,13 @@ reset:
     rcall   LCD_init                    ; initialise LCD
     rcall   RE_init                     ; initialise Rotary Encoder
     rcall   wire1_init                  ; initialize 1-wire(R) interface
-    rcall   lcd_init                    ; initialize LCD
-    sei                                 ; Enable interrupts
+    OUTI    EIMSK, (1<<6)               ; Configure interrupts
+    OUTI    EICRB, 0x00                 ; Interrupt on low-level
+    clr     d1                          ; Reset Application Configuration Register
     jmp     main
 
 
-; === Imports ===
+; === Imports === ;
 
 .include "lib/printf.asm"
 
@@ -43,20 +46,31 @@ reset:
 
 .include "run.asm"
 
+.include "interrupt.asm"
+.include "menu.asm"
 
-; === Entry point ===
+
+
+; === Entry point === ;
 
 main:
-    LCD_PL      greet_msg_0, greet_msg_1
+    LCD_PL  greet_msg_0, greet_msg_1
+    sei
+loop:
+    rjmp    loop
 
 
-; === Program termination ===
+; === Program termination === ;
 
+stop_msg:
+    rcall LCD_clear
+    PRINTF LCD
+        .db "    Program", LF, "   terminated", 0
 stop:
     rjmp    stop
 
 
-; === Binary payloads ===
+; === Binary payloads === ;
 
 greet_msg_0: .db "MICRO-210 proj.", 0
 greet_msg_1: .db "EPFL MT-BA4 2021", 0, 0

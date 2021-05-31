@@ -102,6 +102,9 @@
     <Compile Include="main.asm">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="menu.asm">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="run.asm">
       <SubType>Code</SubType>
     </Compile>
