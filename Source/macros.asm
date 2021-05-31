@@ -118,12 +118,6 @@
 ; ===================
 ; 	CUSTOM
 ; ===================
-.macro SHIFT4 
-	lsr @0
-	lsr @0
-	lsr @0
-	lsr @0
-	.endmacro
 
 .macro ROR24
 	ldi _w, 4
