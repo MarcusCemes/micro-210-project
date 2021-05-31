@@ -4,16 +4,17 @@
 ; Show a navigable menu, allowing to select temperature unit
 ; Stores the selection in bit 0 of register c0
 show_menu:
+    rcall   LCD_CLEAR
     rcall   RE_init_nonblocking
     rcall   _menu_update_screen
 
     _show_menu_interact:
     rcall   RE_nonblocking
 
-    sbrc    a0, RE_BUTTON
+    sbrc    b3, RE_BUTTON
     ret
 
-    sbrs    a0, RE_TURN_RDY
+    sbrs    b3, RE_TURN_RDY
     rjmp    _show_menu_interact
     rcall   RE_nonblocking_acknowledge
 
@@ -25,7 +26,7 @@ show_menu:
 
 ; Update the menu screen based on selection
 _menu_update_screen:
-    rcall   LCD_CLEAR
+    CW      LCD_change_pos, LCD_POS_L1
 
     PRINTF LCD
         .db "Display unit:", LF, 0, 0
@@ -36,7 +37,7 @@ _menu_update_screen:
 
     _show_menu_print_c:
     PRINTF LCD
-    .db "> Celsius", 0
+    .db "> Celsius   ", 0, 0
     ret
 
     _show_menu_print_f:

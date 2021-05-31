@@ -34,22 +34,25 @@ reset:
 ; === Imports ===
 
 .include "lib/printf.asm"
-.include "menu.asm"
 
 .include "drivers/lcd.asm"
 .include "drivers/rotary_encoder.asm"
+
+.include "menu.asm"
+
 
 
 ; === Entry point ===
 
 main:
     LCD_PL  greet_msg_0, greet_msg_1
-    clr     c0
-    rcall   show_menu
 
 
 ; === Program termination ===
 
+    rcall LCD_clear
+    PRINTF LCD
+        .db "    Program", LF, "   terminated", 0
 stop:
     rjmp    stop
 

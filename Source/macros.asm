@@ -150,7 +150,7 @@
 ; Jump if register is equal to a consant
 ; @0: register      @1: constant
 ; @2: label
-.macro	JK
+.macro  JK
     cpi     @0, @1
     breq    @2
 .endmacro
@@ -158,7 +158,7 @@
 ; Jump if bit in register is clear
 ; @0: register   @1: bit
 ; @2: label
-.macro	JB0
+.macro  JB0
     sbrs    @0, @1
     rjmp    @2
 .endmacro
@@ -166,7 +166,7 @@
 ; Jump if bit in register is set
 ; @0: register   @1: bit
 ; @2: label
-.macro	JB1
+.macro  JB1
     sbrc    @0, @1
     rjmp    @2
 .endmacro
@@ -195,10 +195,10 @@
 .endmacro
 
 ; Move three registers
-.macro	MOV3
-    mov	    @2, @5
-    mov	    @1, @4
-    mov	    @0, @3
+.macro  MOV3
+    mov     @2, @5
+    mov     @1, @4
+    mov     @0, @3
 .endmacro
 
 ; Push four registers to the stack
@@ -226,7 +226,7 @@
 .endmacro
 
 ; Clear four registers, first is cleared with subtract instruction
-.macro	CLR4
+.macro  CLR4
     sub     @0, @0
     clr     @1
     clr     @2
@@ -256,10 +256,10 @@
 
 ; Load four data space values to registers using X pointer
 .macro  LDX4
-	ld      @3, x+
-	ld      @2, x+
-	ld      @1, x+
-	ld      @0, x+
+    ld      @3, x+
+    ld      @2, x+
+    ld      @1, x+
+    ld      @0, x+
 .endmacro
 
 ; Four-register aritmetic shift right
@@ -279,7 +279,7 @@
 .endmacro
 
 ; Four-register rotate left through carry
-.macro	ROL4
+.macro  ROL4
     rol     @3
     rol     @2
     rol     @1
@@ -296,7 +296,7 @@
 .endmacro
 
 ; Five-register rotate right through carry
-.macro	ROR5
+.macro  ROR5
     ror     @0
     ror     @1
     ror     @2
